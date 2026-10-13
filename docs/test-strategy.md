@@ -31,14 +31,15 @@ Les Page Objects représentent les pages/parcours qui reviennent souvent (`Login
 
 La smoke vérifie les gestes indispensables: login, visibilité du catalogue, ajout et calcul panier, accès checkout et landing. Le reste de la suite couvre les erreurs de connexion/formulaire, le panier vide, la recherche sans résultat, les variantes et ruptures, les remises, le paiement refusé, les retours entre étapes, la persistance de session locale et les limites de stock observables.
 
-La régression standard exclut les tests `@known-bug`. Ces derniers forment une suite de détection séparée: elle vérifie que les cinq anomalies annoncées sont reproduites en mode bugs, et sonde la redirection intermittente observée en WebKit. Le compte `client_chaos` déclenche les trois anomalies visuelles de catalogue; `?bugs=true` active les cinq. Aucun bug n’est corrigé dans l’application cible.
+La régression exclut `@known-bug` et `@probe`. Les six scénarios `@known-bug` caractérisent les anomalies pédagogiques reproductibles, dont les cinq activables avec `?bugs=true` et le comportement du compte `client_chaos`. La probe NAV-003 est exécutée à part: elle observe la redirection d’une session active et attache URL, contenu et capture si l’anomalie WebKit réapparaît. Ce comportement n’est pas confirmé de façon reproductible et ne doit pas bloquer la régression.
 
 ## Tags, CI et artifacts
 
 - `@smoke`: parcours essentiels, rapide à exécuter après déploiement.
 - `@critical`: commande nominale complète.
-- `@known-bug`: assertions de détection des anomalies pédagogiques documentées.
-- `@app-bug`: sonde isolée d’une anomalie applicative intermittente observée.
+- `@known-bug`: caractérisation des anomalies pédagogiques reproductibles, lancée avec `npm run test:known-bugs`.
+- `@probe`: diagnostic non bloquant des comportements intermittents, lancé avec `npm run test:probes`.
+- `@app-bug`: probe concernant l’anomalie applicative observée, pas un bug pédagogique connu.
 - Les autres scénarios forment la régression fonctionnelle.
 
-GitHub Actions installe Node et les navigateurs, lance le typecheck, la smoke Chromium et la régression cross-browser. Un échec reste bloquant. Rapport HTML, traces, captures et vidéos conservés dans les artifacts en fin de job, y compris en cas d’échec. En local, les mêmes artifacts sont produits sous `playwright-report/` et `test-results/`.
+GitHub Actions sépare la régression bloquante (typecheck, smoke Chromium, cross-browser) des jobs `known-bugs` et `probes`, tous deux non bloquants et publiés avec leurs rapports/artifacts. Cette décision garde le statut de santé fonctionnelle lisible malgré les anomalies d’entraînement attendues et l’incertitude de NAV-003. En local, les rapports sont produits sous `playwright-report/` et `test-results/`.

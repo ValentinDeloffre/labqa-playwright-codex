@@ -1,6 +1,6 @@
 # Matrice des cas de test
 
-Priorité: **P0** bloque l’achat ou l’accès, **P1** risque métier élevé, **P2** couverture utile. Les cas marqués « Oui » sont automatisés. `@known-bug` isole la détection des anomalies intentionnelles et la sonde de l’anomalie applicative observée.
+Priorité: **P0** bloque l’achat ou l’accès, **P1** risque métier élevé, **P2** couverture utile. `@known-bug` caractérise les anomalies pédagogiques; `@probe` collecte un diagnostic non bloquant sur une anomalie intermittente. Les deux catégories sont séparées de la régression fonctionnelle.
 
 | ID | Scénario | Priorité | Type | Auto | Tag |
 |---|---|---:|---|:---:|---|
@@ -49,7 +49,7 @@ Priorité: **P0** bloque l’achat ou l’accès, **P1** risque métier élevé,
 | ACCOUNT-005 | Changement simulé de mot de passe valide confirme le succès | P2 | Positif | Oui | — |
 | NAV-001 | Landing publique conduit à la boutique | P1 | Navigation | Oui | @smoke |
 | NAV-002 | Route protégée redirige le visiteur vers login | P0 | Négatif | Oui | — |
-| NAV-003 | Route login redirige l’utilisateur authentifié; sonde de l’écart intermittent WebKit | P1 | Navigation/anomalie | Oui | @known-bug @app-bug |
+| NAV-003 | Observe si la route login redirige une session active; collecte une preuve si l’écart réapparaît | P1 | Probe diagnostique | Oui | @probe @app-bug |
 | NAV-004 | Logout ferme la session et réactive la protection | P0 | Négatif | Oui | — |
 | NAV-005 | About et route inconnue exposent un contenu identifiable | P2 | Navigation | Oui | — |
 | LAB-001 | QA Lab documente anomalies, déclencheurs et code test | P2 | Contenu produit | Oui | — |
@@ -58,6 +58,6 @@ Priorité: **P0** bloque l’achat ou l’accès, **P1** risque métier élevé,
 | BUG-003 | disappearing-button: action produit invisible détectée | P2 | Anomalie connue | Oui | @known-bug |
 | BUG-004 | invalid-form-accepted: livraison vide acceptée en mode bug | P2 | Anomalie connue | Oui | @known-bug |
 | BUG-005 | price-off-by-one: écart d’un centime affiché | P2 | Anomalie connue | Oui | @known-bug |
-| BUG-006 | client_chaos active le bandeau anomalies du catalogue | P2 | Anomalie connue | Oui | @known-bug |
+| BUG-006 | client_chaos reproduit broken-images, reversed-sort et disappearing-button | P2 | Anomalie connue | Oui | @known-bug |
 
-**Total actuel: 55 scénarios** — 48 scénarios de régression nominale/négative et 7 scénarios de détection séparée (6 bugs intentionnels et 1 sonde d’anomalie applicative). Comptage confirmé par `npx playwright test --list --project=chromium`.
+**Total actuel: 55 scénarios** — 48 tests de régression fonctionnelle, 6 scénarios de caractérisation des bugs pédagogiques et 1 probe diagnostique. Comptage confirmé par `npx playwright test --list --project=chromium`.

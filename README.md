@@ -22,18 +22,19 @@ npm test
 
 | Commande | Usage |
 |---|---|
-| `npm test` | Régression Chromium, sans anomalies connues |
+| `npm test` | Régression Chromium, sans bugs pédagogiques ni probes |
 | `npm run test:smoke` | Courte smoke Chromium (`@smoke`) |
 | `npm run test:smoke:all` | Smoke sur Chromium, Firefox et WebKit |
 | `npm run test:all` | Régression complète cross-browser |
-| `npm run test:known-bugs` | Détection distincte des anomalies documentées (`@known-bug`) |
+| `npm run test:known-bugs` | Caractérisation des bugs pédagogiques reproductibles (`@known-bug`) |
+| `npm run test:probes` | Probes diagnostiques isolées (`@probe`), dont NAV-003 |
 | `npm run test:headed` | Exécution Chromium avec navigateur visible |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run test:debug` | Débogueur Playwright Chromium |
 | `npm run typecheck` | Vérification TypeScript sans émission |
 | `npm run report` | Ouvre le dernier rapport HTML |
 
-Les suites de régression excluent `@known-bug`: elles vérifient les attentes nominales. La commande dédiée aux bugs passe au vert lorsque les symptômes de formation attendus sont détectés. `@critical` signale le parcours d’achat principal.
+Les suites de régression excluent `@known-bug` et `@probe`: elles valident les comportements fonctionnels attendus. La suite `test:known-bugs` caractérise séparément les six anomalies pédagogiques; la suite `test:probes` collecte une preuve si l’anomalie intermittente NAV-003 réapparaît. `@critical` signale le parcours d’achat principal.
 
 ## Architecture
 
@@ -48,7 +49,7 @@ tests/wishlist/           favoris
 tests/checkout/           tunnel d’achat
 tests/account/            profil, commandes, adresse et sécurité
 tests/navigation/         routes, landing et QA Lab
-tests/bugs/               détection séparée des bugs connus
+tests/bugs/               bugs pédagogiques et probes diagnostiques séparés
 docs/                     stratégie QA et matrice des cas
 ```
 
@@ -60,6 +61,8 @@ Les captures et vidéos ne sont gardées qu’en cas d’échec. Les traces sont
 
 ## CI
 
-GitHub Actions installe Node et les navigateurs Playwright, vérifie le typecheck, exécute la smoke Chromium puis la régression et les tests `@known-bug` sur les trois navigateurs. Le rapport HTML et les artifacts de diagnostic sont publiés comme artifact GitHub Actions, même après un échec.
+GitHub Actions sépare trois jobs: `regression` bloque la PR en cas d’échec du typecheck, de la smoke ou de la suite cross-browser; `known-bugs` caractérise séparément les six anomalies pédagogiques et reste non bloquant; `probes` exécute les observations diagnostiques et reste non bloquant. Chaque job publie son propre rapport et ses artifacts, y compris après un échec.
+
+Comptage vérifié: **55 scénarios uniques** — **48** de régression fonctionnelle, **6** de caractérisation des bugs pédagogiques et **1** probe diagnostique. Exécutés sur trois navigateurs, cela représente 144 tests de régression, 18 tests de bugs et 3 probes.
 
 Voir [la stratégie de test](docs/test-strategy.md) et [la matrice de couverture](docs/test-cases.md) pour le périmètre, les risques et les identifiants de scénarios.
