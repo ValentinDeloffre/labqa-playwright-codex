@@ -1,0 +1,32 @@
+name: Playwright E2E
+
+on:
+  push:
+    branches: [main, 'feat/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  e2e:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run typecheck
+      - run: npm run test:smoke
+      - run: npm run test:all
+      - run: npm run test:known-bugs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-and-diagnostics
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

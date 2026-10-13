@@ -41,7 +41,7 @@ export default defineConfig({
    *
    * En local, Playwright choisit automatiquement.
    */
-  workers: isCI ? 2 : undefined,
+  workers: isCI ? 2 : 3,
 
   /**
    * Reporter différent selon l'environnement.
