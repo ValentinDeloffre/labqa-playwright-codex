@@ -59,15 +59,16 @@ test.describe('Bugs documentés — détection de l’état défaillant @known-b
     expect(persistedAuth).toBe(true);
     await page.goto('#/login');
 
-    const remainsOnLogin = await page.getByRole('heading', { name: 'Connexion' }).isVisible().catch(() => false);
+    const remainsOnLogin = new URL(page.url()).hash === '#/login';
     if (remainsOnLogin) {
       const observedUrl = page.url();
+      const visibleText = await page.locator('body').innerText();
       test.info().annotations.push({
         type: 'app-anomaly',
         description: `La route login reste accessible malgré une session persistée; observé de façon intermittente en WebKit (${observedUrl}).`,
       });
       await test.info().attach('app-anomaly', {
-        body: `Session persistée : ${persistedAuth}\nURL observée : ${observedUrl}`,
+        body: `Session persistée : ${persistedAuth}\nURL observée : ${observedUrl}\nContenu visible :\n${visibleText}`,
         contentType: 'text/plain',
       });
     } else {
